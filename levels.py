@@ -23,6 +23,11 @@ class Level:
 
     @property
     def music(self):
+        # .ogg tem prioridade; sem ele, usa o .wav gerado por generate_music.py
+        for extension in (".ogg", ".wav"):
+            path = MUSIC / f"{self.slug}{extension}"
+            if path.exists():
+                return path
         return MUSIC / f"{self.slug}.ogg"
 
 
