@@ -15,6 +15,7 @@ from rhythm.conductor import Conductor
 from rhythm.effects import Effects
 from rhythm.highway import Highway
 from rhythm.view import HighwayView
+from screens import CreditsScreen, TitleScreen
 from settings import COLORS, KEYS, LANES, NOTE_SPRITES, SIZE
 
 # folga depois da última nota antes de mostrar o resultado, em segundos
@@ -157,7 +158,8 @@ def main():
 
 
 def play(window):
-    """abertura → menu → fala do deus → fase (→ game over → de novo) → reação → (final) → menu.
+    """tela inicial → abertura → menu → fala do deus → fase (→ game over → de novo) → reação
+    → (final → créditos) → menu.
 
     cada etapa devolve se o jogador fechou a janela; aí tudo encerra na hora.
     """
@@ -172,6 +174,8 @@ def play(window):
         "night": BackdropScene("noite"),
         "farewell": GodScene(LEVELS, story.GODS, "noite"),
     }
+    if TitleScreen(window, LEVELS).run():
+        return
     if dialogue.run(story.INTRO, story_scenes):
         return
     menu = Menu(window, journey)
@@ -196,7 +200,7 @@ def play(window):
             return
         if approved and not journey.finished:
             journey.complete(level)
-            if journey.finished and dialogue.run(story.ENDING, story_scenes):
+            if journey.finished and (dialogue.run(story.ENDING, story_scenes) or CreditsScreen(window).run()):
                 return
 
 
