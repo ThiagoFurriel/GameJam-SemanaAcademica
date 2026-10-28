@@ -36,7 +36,7 @@ HINT_GAP = 6
 
 # créditos: cada linha é (tipo, texto); "gap" só dá espaço
 CREDITS = (
-    ("title", "APENAS UM INPUT"),
+    ("title", "LINK: Ressonância Maldita"),
     ("small", "uma maldição"),
     ("small", "quatro deuses"),
     ("small", "nenhuma nota errada"),
@@ -169,7 +169,7 @@ class TitleScreen:
             alpha = round(255 * min(1.0, appear))
             top = TITLE_Y + round(TITLE_DROP * (1 - _ease_out(appear)))
             centerx = SIZE[0] // 2
-            ui.draw_text(canvas, ui.font(16), "APENAS UM INPUT", ui.ACCENT, alpha, midtop=(centerx, top))
+            ui.draw_text(canvas, ui.font(16), "LINK: Ressonância Maldita", ui.ACCENT, alpha, midtop=(centerx, top))
             ui.draw_text(
                 canvas,
                 ui.font(8),

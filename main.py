@@ -16,10 +16,12 @@ from rhythm.effects import Effects
 from rhythm.highway import Highway
 from rhythm.view import HighwayView
 from screens import CreditsScreen, TitleScreen
-from settings import COLORS, KEYS, LANES, NOTE_SPRITES, SIZE
+from settings import LANES, MOVE_DOWN_KEYS, MOVE_UP_KEYS, NOTE_SPRITES, SIZE
 
 # folga depois da última nota antes de mostrar o resultado, em segundos
 END_DELAY = 1.5
+# O personagem precisa ter chegado à corda antes de coletar uma nota.
+LANE_TOLERANCE = 4
 
 
 class Game:
@@ -27,7 +29,6 @@ class Game:
         self.window = window
         self.canvas = pygame.Surface(SIZE)
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(None, 12)
         self.images = {
             name: load_image(name)
             for name in (level.background, level.clouds, "cordas", "player")
@@ -82,14 +83,28 @@ class Game:
             self.running = False
             self.closed = True
         elif event.type == pygame.KEYDOWN:
-            if event.key in KEYS and not self.failed:
-                self.lane = KEYS.index(event.key)
-                self.highway.press(self.lane, self.conductor.song_time)
+            if event.key in MOVE_UP_KEYS + MOVE_DOWN_KEYS and not (self.failed or self.finished):
+                # Julga as notas que chegaram antes do comando usando a posição anterior.
+                self.highway.update(self.conductor.song_time, self.occupied_lane)
+                if not self.failed:
+                    direction = -1 if event.key in MOVE_UP_KEYS else 1
+                    next_lane = self.lane + direction
+                    self.lane = next_lane % len(LANES)
+                    if not 0 <= next_lane < len(LANES):
+                        # Ao circular pelas pontas, não atravessa as cordas intermediárias.
+                        self.player_y = float(LANES[self.lane])
             elif event.key == pygame.K_ESCAPE:
                 self.running = False
             elif event.key == pygame.K_RETURN and (self.finished or self.failed):
                 self.retry = self.failed
                 self.running = False
+
+    @property
+    def occupied_lane(self):
+        return next(
+            (i for i, y in enumerate(LANES) if abs(self.player_y - y) <= LANE_TOLERANCE),
+            None,
+        )
 
     def update(self, dt):
         self.animation += dt
@@ -101,7 +116,7 @@ class Game:
         self.conductor.update()
         # um único instante por frame, pra highway e efeitos concordarem sobre o tempo
         song_time = self.conductor.song_time
-        self.highway.update(song_time)
+        self.highway.update(song_time, self.occupied_lane)
         self.effects.update(song_time)
 
     def draw(self):
@@ -112,9 +127,6 @@ class Game:
                 self.canvas.blit(self.images[name], (x, 0))
         self.god.draw(self.canvas, self.animation)
         self.canvas.blit(self.images["cordas"], (0, 0))
-        for i, y in enumerate(LANES):
-            label = self.font.render("ASDFG"[i], False, COLORS[i])
-            self.canvas.blit(label, label.get_rect(center=(17, y - 10)))
         self.highway_view.draw_notes(self.canvas, self.highway, song_time)
         frame = self.player[int(self.animation * 9) % len(self.player)]
         self.canvas.blit(frame, (179, round(self.player_y) - 24))
@@ -143,15 +155,11 @@ class Game:
 
 
 def main():
-    # 48khz é a taxa em que a maioria dos sistemas roda o áudio: casando com ela,
-    # ninguém precisa converter no caminho. buffer pequeno = menos latência.
-    # precisa vir antes do pygame.init(), e não deve mudar depois de calibrar
-    # o offset, porque desloca toda a sincronia.
     pygame.mixer.pre_init(48000, -16, 2, 512)
     pygame.init()
     try:
         window = pygame.display.set_mode((960, 540), pygame.RESIZABLE)
-        pygame.display.set_caption("Apenas um Input")
+        pygame.display.set_caption("LINK: Ressonância Maldita")
         play(window)
     finally:
         pygame.quit()

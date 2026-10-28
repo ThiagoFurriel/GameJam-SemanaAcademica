@@ -40,6 +40,7 @@ class HighwayView:
         self.big_font = ui.font(16)
 
     def draw_notes(self, canvas, highway, song_time):
+        self._draw_lane_arrows(canvas)
         for lane, notes in enumerate(highway.lanes):
             y = LANES[lane]
             pygame.draw.line(canvas, COLORS[lane], (HIT_X, y - 6), (HIT_X, y), 1)
@@ -50,6 +51,16 @@ class HighwayView:
                 if x - sprite.get_width() > SIZE[0]:
                     break
                 canvas.blit(sprite, sprite.get_rect(midbottom=(round(x), y)))
+
+    def _draw_lane_arrows(self, canvas):
+        # Blocos de 2px mantêm o contorno em degraus da pixel art.
+        rows = ((4, 1), (3, 3), (2, 5), (1, 7), (0, 9), (3, 3), (3, 3), (3, 3), (3, 3))
+        for lane, downward in ((0, False), (len(LANES) - 1, True)):
+            top = LANES[lane] - 20
+            for offset, color in ((1, ui.SHADOW), (0, "#ffffff")):
+                for row, (left, width) in enumerate(rows):
+                    y = len(rows) - 1 - row if downward else row
+                    canvas.fill(color, (8 + left * 2 + offset, top + y * 2 + offset, width * 2, 2))
 
     def draw_resonance(self, canvas, resonance):
         """ressonância baixa tira a cor do mundo. vai entre o mundo e o hud, pra o hud seguir colorido."""

@@ -97,7 +97,7 @@ class Menu:
 
         ui.draw_panel(self.canvas, PANEL)
         left = PANEL.left + PADDING
-        ui.draw_text(self.canvas, ui.font(16), "APENAS UM INPUT", ui.ACCENT, topleft=(left, 42))
+        ui.draw_text(self.canvas, ui.font(8), "LINK: Ressonância Maldita", ui.ACCENT, topleft=(left, 42))
         ui.draw_text(
             self.canvas, ui.font(8), self._status(level), ui.TEXT, MUTED_ALPHA, topleft=(left, 86)
         )
