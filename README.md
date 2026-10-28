@@ -19,18 +19,16 @@ python main.py
 
 | tecla | o que faz |
 | --- | --- |
-| `↑` / `W` | sobe uma corda |
-| `↓` / `S` | desce uma corda |
+| `A` `S` `D` `F` `G` | tocam as cordas (de cima pra baixo) |
 | `Enter` / `Espaço` | avança as falas, confirma no menu |
 | setas | escolhem a fase no menu |
 | `Esc` | pula a fala / sai da fase / sai do jogo |
 
 ## Como o jogo funciona
 
-- **Movimento circular:** subir da primeira corda leva à última; descer da última leva à primeira.
 - **Jornada:** Grace (Folk) → Janis (Glam) → Plant (Punk) → Ozzy (Metal). A próxima fase só abre quando o deus aprova a anterior. Depois do último vem o final.
 - **Ressonância:** a barra no topo. Acertos enchem, erros esvaziam, e o mundo vai ficando cinza conforme ela cai. Se zerar, é game over. O deus aprova se a fase terminar com 50% ou mais.
-- **Notas:** posicione Link na corda correta antes da chegada de cada nota. A coleta é automática: estar na corda rende um acerto; estar em outra corda ou entre cordas resulta em erro. Não é necessário apertar uma tecla no instante da nota.
+- **Notas:** cada quadrado precisa ser tocado quando chega no Link. O acerto é julgado por tempo: perfeito (até 70 ms), bom (até 130 ms) ou errou.
 
 ## Estrutura
 
